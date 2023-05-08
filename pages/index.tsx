@@ -19,7 +19,10 @@ export default function Home() {
   useEffect(() => {
     fetch("/api/get-products")
       .then((res) => res.json())
-      .then((data) => setProducts(data.items));
+      .then(
+        (data) => setProducts(data.items)
+        // console.log(data.items)
+      );
   }, []);
   const inputRef = useRef<HTMLInputElement>(null);
   const handleClick = () => {
@@ -54,7 +57,12 @@ export default function Home() {
         <div>
           <p>Product List</p>
           {products &&
-            products.map((item) => <div key={item.id}>{item.name}</div>)}
+            products.map((item) => (
+              <>
+                <div key={item.id}>{item.name}</div>
+              </>
+            ))}
+
           {/* {products &&
             products.map((item) => (
               <div key={item.id}>
@@ -80,7 +88,7 @@ export default function Home() {
             ))} */}
         </div>
       </div>
-      {console.log(products)}
+      {/* {console.log(products)} */}
       {/* </main> */}
     </>
   );
