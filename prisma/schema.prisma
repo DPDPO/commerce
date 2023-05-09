@@ -20,6 +20,7 @@ model products {
   category_id Int?
   createdAt   DateTime @default(now()) @db.DateTime(0)
   contents    String?  @db.Text
+  price       Int      @default(20000)
 
   @@index([category_id], map: "category_id_idx")
 }
