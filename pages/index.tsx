@@ -115,6 +115,12 @@ export default function Home() {
       </div>
       {/* {console.log(products)} */}
       {/* </main> */}
+      {/* <Image
+        width={300}
+        height={300}
+        alt="img"
+        src="https://as2.ftcdn.net/v2/jpg/05/44/69/13/1000_F_544691377_60BJEfTNlQvKCKADBzeVweCvGI3VOoi8.jpg"
+      ></Image> */}
     </>
   );
 }

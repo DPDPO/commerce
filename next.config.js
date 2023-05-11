@@ -7,7 +7,7 @@ const nextConfig = {
   },
 
   images: {
-    domains: ["picsum.photos"],
+    domains: ["picsum.photos", "as2.ftcdn.net"],
   },
 };
 
