@@ -68,7 +68,6 @@ export default function Products() {
                 </span>
               </div>
               <span className="text-zinc-500">
-                {/* {item.category_id === 1 && "의류"} */}
                 {CATECORY_MAP[item.category_id - 1]}
               </span>
             </div>

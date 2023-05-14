@@ -49,10 +49,18 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head> */}
       {/* <main className={`${styles.main} ${inter.className}`}> */}
-      <div className={styles.description}>
+      <div
+        css={css`
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin-top: 30px;
+        `}
+        className={styles.description}
+      >
         <p>
           Get started by editing&nbsp;
-          <code className={styles.code}>pages/index.tsx</code>
+          <code className={styles.code}>commerce</code>
         </p>
         <input
           className="placeholder:italic placeholder:text-slate-400 block bg-white w-96 border border-slate-300 rounded-md py-2 pl-3 pr-3 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm"
@@ -63,10 +71,11 @@ export default function Home() {
         />
         <button
           css={css`
-            padding: 32px;
+            padding: 12px;
             background-color: hotpink;
-            font-size: 24px;
+            font-size: 14px;
             border-radius: 4px;
+            margin-top: 12px;
           `}
           onClick={handleClick}
         >

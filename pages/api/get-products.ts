@@ -3,11 +3,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-async function getProducts(
-  skip: number,
-  take: number,
-  category: number | null
-) {
+async function getProducts(skip: number, take: number, category: number) {
   const where =
     category && category !== -1
       ? {
