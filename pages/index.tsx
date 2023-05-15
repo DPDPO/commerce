@@ -6,7 +6,7 @@
 import styles from "../styles/Home.module.css";
 import { useEffect, useRef, useState } from "react";
 import { css } from "@emotion/react";
-
+import Link from "next/link";
 // const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
@@ -69,7 +69,7 @@ export default function Home() {
           name="search"
           ref={inputRef}
         />
-        <button
+        {/* <button
           css={css`
             padding: 12px;
             background-color: hotpink;
@@ -80,7 +80,7 @@ export default function Home() {
           onClick={handleClick}
         >
           Add jaket
-        </button>
+        </button> */}
         <div>
           <p>Product List</p>
           {products &&
@@ -117,6 +117,19 @@ export default function Home() {
               </div>
             ))} */}
         </div>
+        <Link href="/products/page">
+          <button
+            css={css`
+              padding: 12px;
+              background-color: hotpink;
+              font-size: 14px;
+              border-radius: 4px;
+              margin-top: 12px;
+            `}
+          >
+            products
+          </button>
+        </Link>
       </div>
       {/* {console.log(products)} */}
       {/* </main> */}

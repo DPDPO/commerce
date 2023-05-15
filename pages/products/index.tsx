@@ -1,6 +1,7 @@
 import { products } from "@prisma/client";
 import { TAKE } from "constants/products";
 import Image from "next/image";
+// import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 export default function Products() {
