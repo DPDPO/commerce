@@ -4,13 +4,14 @@ import { useCallback, useEffect, useState } from "react";
 import { Input, Pagination, SegmentedControl, Select } from "@mantine/core";
 import { CATECORY_MAP, FILTERS, TAKE } from "constants/products";
 import { IconSearch } from "@tabler/icons-react";
+// import { IconSearch } from "@tabler/icons";
 import useDebounce from "hooks/useDebounce";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query"; //캐싱관리
 
 export default function Products() {
   const [activePage, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [categories, setCategories] = useState<categories[]>([]);
+  // const [total, setTotal] = useState(0); useQuery product때문에 주석
+  // const [categories, setCategories] = useState<categories[]>([]); useQuery product때문에 주석
   // const [products, setProducts] = useState<products[]>([]); useQuery product때문에 주석
   const [selectCategory, setSelectCategory] = useState<string>("-1");
   const [selectedFilter, setSelectedFilter] = useState<string | null>(
@@ -23,20 +24,47 @@ export default function Products() {
     setKeyword(e.target.value);
   };
 
-  useEffect(() => {
-    fetch(`/api/get-categories`)
-      .then((res) => res.json())
-      .then((data) => setCategories(data.items));
-  }, []);
-  useEffect(() => {
-    fetch(
-      // `/api/get-products-count?category=${selectCategory}&contains=${keyword}` => 매입력마다 불필요한 랜더링 때문에 debounce해줌 밑에도 마찬가지
-      `/api/get-products-count?category=${selectCategory}&contains=${debouncedKeyword}`
-    )
-      .then((res) => res.json())
-      .then((data) => setTotal(Math.ceil(data.items / TAKE)));
-  }, [selectCategory, /*keyword */ debouncedKeyword]);
+  // useEffect(() => {
+  //   fetch(`/api/get-categories`)
+  //     .then((res) => res.json())
+  //     .then((data) => setCategories(data.items));
+  // }, []);
+  const { data: categories } = useQuery<
+    { items: categories[] },
+    unknown,
+    categories[]
+  >(
+    [`/api/get-categories`],
+    () => fetch(`/api/get-categories`).then((res) => res.json()),
+    {
+      select: (data) => data.items,
+    }
+  );
 
+  // useEffect(() => {
+  //   fetch(
+  //     // `/api/get-products-count?category=${selectCategory}&contains=${keyword}` => 매입력마다 불필요한 랜더링 때문에 debounce해줌 밑에도 마찬가지
+  //     `/api/get-products-count?category=${selectCategory}&contains=${debouncedKeyword}`
+  //   )
+  //     .then((res) => res.json())
+  //     .then((data) => setTotal(Math.ceil(data.items / TAKE)));
+  // }, [selectCategory, /*keyword */ debouncedKeyword]);
+
+  const { data: total } = useQuery(
+    [
+      `/api/get-products-count?category=${selectCategory}&contains=${debouncedKeyword}`,
+    ],
+    () =>
+      fetch(
+        `/api/get-products-count?category=${selectCategory}&contains=${debouncedKeyword}`
+      )
+        .then((res) => res.json())
+        // select 안쓰고 then으로
+        .then((data) => Math.ceil(data.items / TAKE))
+    // {
+    //   select: (data) => Math.ceil(data.items / TAKE),
+    // }
+  );
   // useEffect(() => {
   //   const skip = TAKE * (activePage - 1);
   //   fetch(
@@ -126,12 +154,14 @@ export default function Products() {
         </div>
       )}
       <div className="w-full flex mt-6">
-        <Pagination
-          className="m-auto"
-          value={activePage}
-          onChange={setPage}
-          total={total}
-        />
+        {total && (
+          <Pagination
+            className="m-auto"
+            value={activePage}
+            onChange={setPage}
+            total={total}
+          />
+        )}
       </div>
     </div>
   );
