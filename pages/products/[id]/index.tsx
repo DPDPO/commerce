@@ -4,7 +4,7 @@ import Image from "next/image";
 import CustomEditor from "@/components/Editor";
 import { useRouter } from "next/router";
 import { EditorState, convertFromRaw } from "draft-js";
-import { GetServerSideProps } from "next";
+import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { products } from "@prisma/client";
 import { format } from "date-fns";
 import { CATECORY_MAP } from "constants/products";
@@ -13,9 +13,9 @@ import { Button } from "@mantine/core";
 import { IconHeart, IconHeartbeat } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 
-export async function getServerSideProps(context: GetServerSideProps) {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
   const product = await fetch(
-    `http://localhost:3000/api/get-product?id=${context.params.id}`
+    `http://localhost:3000/api/get-product?id=${context.params?.id}`
   )
     .then((res) => res.json())
     .then((data) => data.items);
@@ -44,7 +44,7 @@ export async function getServerSideProps(context: GetServerSideProps) {
 const WISHLIST_QUERY = `/api/get-wishlist`;
 
 export default function Products(props: {
-  product: products & { images: string[] };
+  product: products & { images: string[]; category_id: any };
 }) {
   const [index, setIndex] = useState(0);
   const { data: session } = useSession();
@@ -128,7 +128,7 @@ export default function Products(props: {
   return (
     <>
       {product != null && productId != null ? (
-        <div className=" ">
+        <div className="">
           <div>
             <Carousel animation="zoom" autoplay wrapAround slideIndex={index}>
               {product?.images.map((url, idx) => (
@@ -136,7 +136,7 @@ export default function Products(props: {
                   key={`${url}-carousel-${idx}`}
                   src={url}
                   alt="img"
-                  width={1000}
+                  width={600}
                   height={600}
                   layout="responsive"
                 />

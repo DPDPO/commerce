@@ -137,7 +137,7 @@ export default function Products() {
       )}
       {products && (
         <div className="grid grid-cols-3 gap-5">
-          {products.map((item) => (
+          {products.map((item: any) => (
             <div
               key={item.id}
               style={{ maxWidth: 300, cursor: "pointer" }}
