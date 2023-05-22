@@ -17,8 +17,10 @@ export default function App({
   return (
     <SessionProvider session={session}>
       <QueryClientProvider client={queryClient}>
-        <Header />
-        <Component {...pageProps} />
+        <div className="px-24">
+          <Header />
+          <Component {...pageProps} />
+        </div>
       </QueryClientProvider>
     </SessionProvider>
   );

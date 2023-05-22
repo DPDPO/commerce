@@ -13,27 +13,29 @@ export default function Header() {
   return (
     <div className="mt-12 mb-12">
       <div className="w-full flex h-50 items-center">
-        <IconHome2 className="ml-12" onClick={() => router.push("/")} />
+        <IconHome2 onClick={() => router.push("/")} />
         <span className="m-auto" />
-        <IconShoppingCart
-          className="mr-4"
-          onClick={() => router.push("/cart")}
-        />
         {session ? (
-          //   <image
-          //     // alt="user"
-          //     // src={session.user?.image}
-          //     width={30}
-          //     height={30}
-          //     style={{ borderRadius: "50%" }}
-          //   />
-          <IconUserCircle
-            className="mr-12"
-            onClick={() => router.push("/my")}
-          />
+          <>
+            {/* <image
+                // alt="user"
+                // src={session.user?.image}
+                width={30}
+                height={30}
+                style={{ borderRadius: "50%" }}
+            /> */}
+            <IconShoppingCart
+              className="mr-4"
+              onClick={() => router.push("/cart")}
+            />
+            <IconUserCircle
+              // className="mr-12"
+              onClick={() => router.push("/my")}
+            />
+          </>
         ) : (
           <IconUser
-            className="mr-12"
+            // className="mr-12"
             onClick={() => router.push("/auth/login")}
           />
         )}

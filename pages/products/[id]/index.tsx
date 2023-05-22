@@ -10,8 +10,13 @@ import { format } from "date-fns";
 import { CATECORY_MAP } from "constants/products";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@mantine/core";
-import { IconHeart, IconHeartbeat } from "@tabler/icons-react";
+import {
+  IconHeart,
+  IconHeartbeat,
+  IconShoppingCart,
+} from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
+import { Count } from "@/components/Count";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const product = await fetch(
@@ -48,6 +53,8 @@ export default function Products(props: {
 }) {
   const [index, setIndex] = useState(0);
   const { data: session } = useSession();
+
+  const [quantity, setQuantity] = useState<any>();
 
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -125,12 +132,28 @@ export default function Products(props: {
     wishlist != null && productId != null
       ? wishlist.includes(String(productId))
       : false;
+
+  const validate = (type: "cart" | "order") => {
+    if (quantity == null) {
+      alert("최소 수량을 입력하세요.");
+      return;
+    }
+    alert("장바구니로 이동");
+    //TODO 장바구니에 등록하는 기능 추가
+    router.push("/cart");
+  };
   return (
     <>
       {product != null && productId != null ? (
-        <div className="">
-          <div>
-            <Carousel animation="zoom" autoplay wrapAround slideIndex={index}>
+        <div className=" flex flex-row justify-center">
+          <div style={{ maxWidth: 600, marginRight: 52 }}>
+            <Carousel
+              animation="zoom"
+              withoutControls
+              autoplay
+              wrapAround
+              slideIndex={index}
+            >
               {product?.images.map((url, idx) => (
                 <Image
                   key={`${url}-carousel-${idx}`}
@@ -138,63 +161,76 @@ export default function Products(props: {
                   alt="img"
                   width={600}
                   height={600}
-                  layout="responsive"
+                  // layout="responsive"
                 />
               ))}
             </Carousel>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                marginTop: "8px",
-              }}
-            >
-              <div className="flex ">
-                {product?.images.map((url, idx) => (
-                  <div key={`${url}-thub-${idx}`} onClick={() => setIndex(idx)}>
-                    <Image src={url} alt="image" width={100} height={60} />
-                  </div>
-                ))}
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                  }}
-                >
-                  <div className="text-lg text-zinc-600">
-                    {CATECORY_MAP[product.category_id - 1]}
-                  </div>
-                  <div className="text-lg text-zinc-600">{product.name}</div>
-                  <div className="text-lg text-zinc-600">
-                    {product.price.toLocaleString("ko-kr")}원
-                  </div>
-                  <div className="text-lg text-zinc-400">
-                    {format(new Date(product.createdAt), "yyyy년 M월 d 일")}
-                  </div>
-
-                  <Button
-                    // loading={isLoading}
-                    // disabled={wishlist == null}
-                    leftIcon={isWished ? <IconHeart /> : <IconHeartbeat />}
-                    style={{ backgroundColor: isWished ? "red" : "grey" }}
-                    radius="xl"
-                    onClick={() => {
-                      if (session == null) {
-                        alert("로그인이 필요합니다.");
-                      }
-                      mutate(String(productId));
-                    }}
-                  >
-                    찜하기
-                  </Button>
-                  <div />
+            <div className="flex justify-center space-x-4">
+              {product?.images.map((url, idx) => (
+                <div key={`${url}-thub-${idx}`} onClick={() => setIndex(idx)}>
+                  <Image src={url} alt="image" width={100} height={60} />
                 </div>
-              </div>
+              ))}
             </div>
             {editorState != null && (
               <CustomEditor editorState={editorState} readOnly />
             )}
+          </div>
+          <div className="flex flex-col space-y-1">
+            <div className="text-lg text-zinc-600">
+              <span style={{ color: "grey" }}> Category : </span>
+              {CATECORY_MAP[product.category_id - 1]}
+            </div>
+            <div className="text-lg text-zinc-600">{product.name}</div>
+            <div className="text-lg text-zinc-600">
+              {product.price.toLocaleString("ko-kr")}원
+            </div>
+            <div className="text-lg text-zinc-400">
+              등록일자 :{" "}
+              {format(new Date(product.createdAt), "yyyy년 M월 d 일")}
+            </div>
+            <Button
+              // loading={isLoading}
+              // disabled={wishlist == null}
+              leftIcon={isWished ? <IconHeart /> : <IconHeartbeat />}
+              style={{
+                marginTop: 12,
+                backgroundColor: isWished ? "red" : "grey",
+              }}
+              radius="xl"
+              onClick={() => {
+                if (session == null) {
+                  alert("로그인이 필요합니다.");
+                } else {
+                  mutate(String(productId));
+                }
+              }}
+            >
+              찜하기
+            </Button>
+            <Button
+              // loading={isLoading}
+              // disabled={wishlist == null}
+              leftIcon={<IconShoppingCart />}
+              style={{
+                marginTop: 12,
+                backgroundColor: "black",
+              }}
+              radius="xl"
+              onClick={() => {
+                if (session == null) {
+                  alert("로그인이 필요합니다.");
+                } else {
+                  validate("cart");
+                }
+              }}
+            >
+              장바구니
+            </Button>
+            <div>
+              <span className="text-lg">수량</span>
+              <Count value={quantity} setValue={setQuantity} max={200} />
+            </div>
           </div>
         </div>
       ) : (
