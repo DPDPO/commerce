@@ -54,7 +54,7 @@ export default function Products(props: {
   const [index, setIndex] = useState(0);
   const { data: session } = useSession();
 
-  const [quantity, setQuantity] = useState<any>();
+  const [quantity, setQuantity] = useState<any>(1);
 
   const router = useRouter();
   const queryClient = useQueryClient();

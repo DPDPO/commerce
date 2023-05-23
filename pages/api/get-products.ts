@@ -32,6 +32,8 @@ async function getProducts({
       ? containsCondition
       : undefined;
   // const orderBycondition = getOrderBy(orderBy)
+  // console.log(where);
+
   try {
     const response = await prisma.products.findMany({
       skip: skip,
@@ -71,7 +73,8 @@ export default async function handler(
       take: Number(take),
       category: Number(category),
       orderBy: String(orderBy),
-      contains: String(contains),
+      //cart페이지에서 추천상품 불러올때 contains 없기때문에 조건문 활용해줘야됨
+      contains: contains ? String(contains) : "",
     });
     res.status(200).json({ items: products, message: `Success` });
   } catch (error) {
