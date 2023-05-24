@@ -1,59 +1,80 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { Count } from "@/components/Count";
 import styled from "@emotion/styled";
 import { Button } from "@mantine/core";
-import { products } from "@prisma/client";
+import { Cart, OrderItem, products } from "@prisma/client";
 import { IconRefresh, IconX } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CATECORY_MAP } from "constants/products";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useState } from "react";
+import { ORDER_QUERY_KEY } from "./my";
 
-interface CartItem {
+interface CartItem extends Cart {
   name: string;
-  productId: number;
   price: number;
-  quantity: number;
-  amount: number;
   Image_url: string;
 }
 
-export default function cart() {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+export const CART_QUERY_KEY = `/api/get-cart`;
+
+export default function CartPage() {
+  const { data } = useQuery<{ items: CartItem[] }, unknown, CartItem[]>(
+    [CART_QUERY_KEY],
+    () =>
+      fetch(CART_QUERY_KEY)
+        .then((res) => res.json())
+        .then((data) => data.items)
+  );
   const router = useRouter();
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [data, setData] = useState<CartItem[]>([]);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const dilveryAcount = data && data.length > 0 ? 5000 : 0;
+  const discountDily = 0;
+  const queryClient = useQueryClient();
+
   const amount = useMemo(() => {
+    if (data == null) {
+      return 0;
+    }
     return data.map((item) => item.amount).reduce((pre, cur) => pre + cur, 0);
   }, [data]);
-  const dilveryAcount = 5000;
-  const discountDily = 0;
+
+  const { mutate: addOrder } = useMutation<
+    unknown,
+    unknown,
+    Omit<OrderItem, "id">[],
+    any
+  >(
+    (items) =>
+      fetch(`/api/add-order`, {
+        method: "POST",
+        body: JSON.stringify({ items }),
+      })
+        .then((res) => res.json())
+        .then((data) => data.items),
+    {
+      onMutate: () => {
+        queryClient.invalidateQueries([ORDER_QUERY_KEY]);
+      },
+      onSuccess: () => {
+        router.push("/my");
+      },
+    }
+  );
+
   const handleOrder = () => {
-    alert("주문하기");
+    if (data == null) {
+      return;
+    }
+    addOrder(
+      data.map((cart) => ({
+        productId: cart.productId,
+        price: cart.price,
+        amount: cart.amount,
+        quantity: cart.quantity,
+      }))
+    );
   };
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  useEffect(() => {
-    const mockData = [
-      {
-        name: "멋있는 신발",
-        productId: 5,
-        price: 20000,
-        quantity: 2,
-        amount: 40000,
-        Image_url: ` https://t4.ftcdn.net/jpg/04/32/39/97/240_F_432399766_IO6Ng1sGStdQrU77TeqrZU9Hllm8x4q6.jpg`,
-      },
-      {
-        name: "느낌있는 후드",
-        productId: 5,
-        price: 30240,
-        quantity: 1,
-        amount: 30240,
-        Image_url: ` https://t4.ftcdn.net/jpg/04/32/39/97/240_F_432399766_IO6Ng1sGStdQrU77TeqrZU9Hllm8x4q6.jpg`,
-      },
-    ];
-    setData(mockData);
-  }, []);
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const { data: products } = useQuery<
@@ -69,13 +90,17 @@ export default function cart() {
   );
   return (
     <div>
-      <span className="text-2xl mb-3">cart {data.length}</span>
+      <span className="text-2xl mb-3">Cart ({data ? data.length : 0}) </span>
       <div className="flex">
         <div className="flex flex-col p-4 space-y-4 flex-1">
-          {data?.length > 0 ? (
-            data.map((item, idx) => <Item key={idx} {...item} />)
+          {data ? (
+            data?.length > 0 ? (
+              data.map((item, idx) => <Item key={idx} {...item} />)
+            ) : (
+              <div>장바구니에 아무것도 없습니다.</div>
+            )
           ) : (
-            <div>장바구니에 아무것도 없습니다.</div>
+            <div>불러오는 중 입니다...</div>
           )}
         </div>
         <div className="px-4">
@@ -156,12 +181,17 @@ const Item = (props: CartItem) => {
   const [quantity, setQuantity] = useState<number | any>(props.quantity);
   const [amount, setAmount] = useState<number>(props.quantity);
   const router = useRouter();
-  const handleDelete = () => {
-    alert("장바구니에서 삭제");
+  const queryClient = useQueryClient();
+  const handleDelete = async () => {
+    await deleteCart(props.id);
   };
 
   const handleUpdate = () => {
-    alert("장바구니에서 업데이트");
+    updateCart({
+      ...props,
+      quantity: quantity,
+      amount: props.price * quantity,
+    });
   };
 
   useEffect(() => {
@@ -169,15 +199,82 @@ const Item = (props: CartItem) => {
       setAmount(quantity * props.price);
     }
   }, [quantity, props.price]);
+
+  const { mutate: updateCart } = useMutation<unknown, unknown, Cart, any>(
+    (item) =>
+      fetch(`/api/update-cart`, {
+        method: "POST",
+        body: JSON.stringify({ item }),
+      })
+        .then((res) => res.json())
+        .then((data) => data.items),
+    {
+      onMutate: async (item) => {
+        await queryClient.cancelQueries({ queryKey: [CART_QUERY_KEY] });
+
+        // Snapshot the previous value
+        const previous = queryClient.getQueryData([CART_QUERY_KEY]);
+
+        // Optimistically update to the new value
+        queryClient.setQueryData<Cart[]>([CART_QUERY_KEY], (old) =>
+          old?.filter((c) => c.id !== item.id).concat(item)
+        );
+
+        // Return a context object with the snapshotted value
+        return { previous };
+      },
+      // onError: (error, _, context) => {
+      //   queryClient.setQueriesData([WISHLIST_QUERY], context.previous);
+      // },
+      onSuccess: () => {
+        queryClient.invalidateQueries([CART_QUERY_KEY]);
+      },
+    }
+  );
+
+  const { mutate: deleteCart } = useMutation<unknown, unknown, number, any>(
+    (id) =>
+      fetch(`/api/delete-cart`, {
+        method: "POST",
+        body: JSON.stringify({ id }),
+      })
+        .then((res) => res.json())
+        .then((data) => data.items),
+    {
+      onMutate: async (id) => {
+        await queryClient.cancelQueries({ queryKey: [CART_QUERY_KEY] });
+
+        // Snapshot the previous value
+        const previous = queryClient.getQueryData([CART_QUERY_KEY]);
+
+        // Optimistically update to the new value
+        queryClient.setQueryData<Cart[]>([CART_QUERY_KEY], (old) =>
+          old?.filter((c) => c.id !== id)
+        );
+
+        // Return a context object with the snapshotted value
+        return { previous };
+      },
+      // onError: (error, _, context) => {
+      //   queryClient.setQueriesData([WISHLIST_QUERY], context.previous);
+      // },
+      onSuccess: () => {
+        queryClient.invalidateQueries([CART_QUERY_KEY]);
+      },
+    }
+  );
   return (
     <div className="w-full flex p-4" style={{ borderBottom: "1px solid grey" }}>
-      <Image
-        src={props.Image_url}
-        width={155}
-        height={195}
-        alt={props.name}
-        onClick={() => router.push(`/products/${props.productId}`)}
-      />
+      {props.Image_url && (
+        <Image
+          src={props.Image_url}
+          width={155}
+          height={195}
+          alt={props.name}
+          onClick={() => router.push(`/products/${props.productId}`)}
+        />
+      )}
+
       <div className="flex flex-col ml-4">
         <span className="font-semibold mb-2">{props.name}</span>
         <span className="mb-auto">

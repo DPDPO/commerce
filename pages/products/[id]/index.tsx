@@ -5,7 +5,7 @@ import CustomEditor from "@/components/Editor";
 import { useRouter } from "next/router";
 import { EditorState, convertFromRaw } from "draft-js";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { products } from "@prisma/client";
+import { Cart, OrderItem, products } from "@prisma/client";
 import { format } from "date-fns";
 import { CATECORY_MAP } from "constants/products";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -17,6 +17,8 @@ import {
 } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import { Count } from "@/components/Count";
+import { CART_QUERY_KEY } from "pages/cart";
+import { ORDER_QUERY_KEY } from "pages/my";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const product = await fetch(
@@ -128,6 +130,52 @@ export default function Products(props: {
       },
     }
   );
+
+  const { mutate: addCart } = useMutation<
+    unknown,
+    unknown,
+    Omit<Cart, "id" | "userId">,
+    any
+  >(
+    (item) =>
+      fetch(`/api/add-cart`, {
+        method: "POST",
+        body: JSON.stringify({ item }),
+      })
+        .then((res) => res.json())
+        .then((data) => data.items),
+    {
+      onMutate: () => {
+        queryClient.invalidateQueries([CART_QUERY_KEY]);
+      },
+      onSuccess: () => {
+        router.push("/cart");
+      },
+    }
+  );
+
+  const { mutate: addOrder } = useMutation<
+    unknown,
+    unknown,
+    Omit<OrderItem, "id">[],
+    any
+  >(
+    (items) =>
+      fetch(`/api/add-order`, {
+        method: "POST",
+        body: JSON.stringify({ items }),
+      })
+        .then((res) => res.json())
+        .then((data) => data.items),
+    {
+      onMutate: () => {
+        queryClient.invalidateQueries([ORDER_QUERY_KEY]);
+      },
+      onSuccess: () => {
+        router.push("/my");
+      },
+    }
+  );
   const isWished =
     wishlist != null && productId != null
       ? wishlist.includes(String(productId))
@@ -138,9 +186,25 @@ export default function Products(props: {
       alert("최소 수량을 입력하세요.");
       return;
     }
-    alert("장바구니로 이동");
-    //TODO 장바구니에 등록하는 기능 추가
-    router.push("/cart");
+    // alert("장바구니로 이동");
+
+    if (type === "cart") {
+      addCart({
+        productId: product.id,
+        quantity: quantity,
+        amount: product.price * quantity,
+      });
+    }
+    if (type === "order") {
+      addOrder([
+        {
+          productId: product.id,
+          quantity: quantity,
+          price: product.price,
+          amount: product.price * quantity,
+        },
+      ]);
+    }
   };
   return (
     <>
@@ -189,29 +253,55 @@ export default function Products(props: {
               등록일자 :{" "}
               {format(new Date(product.createdAt), "yyyy년 M월 d 일")}
             </div>
+            <div style={{ marginTop: 30 }}>
+              <span className="text-lg">수량</span>
+              <Count value={quantity} setValue={setQuantity} max={200} />
+            </div>
+            <div className="flex space-x-4">
+              <Button
+                // loading={isLoading}
+                // disabled={wishlist == null}
+                leftIcon={isWished ? <IconHeart /> : <IconHeartbeat />}
+                style={{
+                  marginTop: 12,
+                  backgroundColor: isWished ? "red" : "grey",
+                  width: 120,
+                }}
+                radius="xl"
+                onClick={() => {
+                  if (session == null) {
+                    alert("로그인이 필요합니다.");
+                  } else {
+                    mutate(String(productId));
+                  }
+                }}
+              >
+                찜하기
+              </Button>
+              <Button
+                // loading={isLoading}
+                // disabled={wishlist == null}
+                leftIcon={<IconShoppingCart />}
+                style={{
+                  marginTop: 12,
+                  backgroundColor: "black",
+                  width: 120,
+                }}
+                radius="xl"
+                onClick={() => {
+                  if (session == null) {
+                    alert("로그인이 필요합니다.");
+                  } else {
+                    validate("cart");
+                  }
+                }}
+              >
+                장바구니
+              </Button>
+            </div>
             <Button
               // loading={isLoading}
               // disabled={wishlist == null}
-              leftIcon={isWished ? <IconHeart /> : <IconHeartbeat />}
-              style={{
-                marginTop: 12,
-                backgroundColor: isWished ? "red" : "grey",
-              }}
-              radius="xl"
-              onClick={() => {
-                if (session == null) {
-                  alert("로그인이 필요합니다.");
-                } else {
-                  mutate(String(productId));
-                }
-              }}
-            >
-              찜하기
-            </Button>
-            <Button
-              // loading={isLoading}
-              // disabled={wishlist == null}
-              leftIcon={<IconShoppingCart />}
               style={{
                 marginTop: 12,
                 backgroundColor: "black",
@@ -221,16 +311,12 @@ export default function Products(props: {
                 if (session == null) {
                   alert("로그인이 필요합니다.");
                 } else {
-                  validate("cart");
+                  validate("order");
                 }
               }}
             >
-              장바구니
+              구매하기
             </Button>
-            <div>
-              <span className="text-lg">수량</span>
-              <Count value={quantity} setValue={setQuantity} max={200} />
-            </div>
           </div>
         </div>
       ) : (

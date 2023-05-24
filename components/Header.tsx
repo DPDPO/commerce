@@ -1,4 +1,5 @@
 import {
+  IconHeart,
   IconHome2,
   IconShoppingCart,
   IconUser,
@@ -24,6 +25,10 @@ export default function Header() {
                 height={30}
                 style={{ borderRadius: "50%" }}
             /> */}
+            <IconHeart
+              className="mr-4"
+              onClick={() => router.push("/wishlist")}
+            />
             <IconShoppingCart
               className="mr-4"
               onClick={() => router.push("/cart")}
