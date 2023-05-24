@@ -124,6 +124,7 @@ export default function Home() {
           <SegmentedControl
             value={selectCategory}
             onChange={setSelectCategory}
+            onClick={() => setPage(1)}
             data={[
               { label: "ALL", value: "-1" },
               ...categories.map((category) => ({

@@ -14,7 +14,7 @@ import { ORDER_QUERY_KEY } from "./my";
 interface CartItem extends Cart {
   name: string;
   price: number;
-  Image_url: string;
+  image_url: string;
 }
 
 export const CART_QUERY_KEY = `/api/get-cart`;
@@ -180,10 +180,13 @@ export default function CartPage() {
 const Item = (props: CartItem) => {
   const [quantity, setQuantity] = useState<number | any>(props.quantity);
   const [amount, setAmount] = useState<number>(props.quantity);
+
+  // console.log(props);
+
   const router = useRouter();
   const queryClient = useQueryClient();
-  const handleDelete = async () => {
-    await deleteCart(props.id);
+  const handleDelete = () => {
+    deleteCart(props.id);
   };
 
   const handleUpdate = () => {
@@ -265,9 +268,9 @@ const Item = (props: CartItem) => {
   );
   return (
     <div className="w-full flex p-4" style={{ borderBottom: "1px solid grey" }}>
-      {props.Image_url && (
+      {props.image_url && (
         <Image
-          src={props.Image_url}
+          src={props.image_url}
           width={155}
           height={195}
           alt={props.name}

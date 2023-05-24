@@ -2,10 +2,9 @@
 import { Count } from "@/components/Count";
 import styled from "@emotion/styled";
 import { Badge, Button } from "@mantine/core";
-import { Cart, OrderItem, Orders, products } from "@prisma/client";
+import { Cart, OrderItem, Orders } from "@prisma/client";
 import { IconRefresh, IconX } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CATECORY_MAP } from "constants/products";
 import { format } from "date-fns";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -13,7 +12,7 @@ import React, { useEffect, useMemo, useState } from "react";
 
 interface OrderItemDetail extends OrderItem {
   name: string;
-  Image_url: string;
+  image_url: string;
 }
 
 interface OrderDetail extends Orders {
@@ -42,7 +41,6 @@ export default function MyPage() {
         .then((res) => res.json())
         .then((data) => data.items)
   );
-  const router = useRouter();
 
   return (
     <div>
@@ -53,7 +51,11 @@ export default function MyPage() {
         <div className="flex flex-col p-4 space-y-4 flex-1">
           {data ? (
             data?.length > 0 ? (
-              data.map((item, idx) => <DetailItem key={idx} {...item} />)
+              data.map((item, idx) => (
+                <>
+                  <DetailItem {...item} key={idx} />
+                </>
+              ))
             ) : (
               <div>주문내역이 아무것도 없습니다.</div>
             )
@@ -67,7 +69,8 @@ export default function MyPage() {
 }
 const DetailItem = (props: OrderDetail) => {
   const queryClient = useQueryClient();
-  //   console.log(props?.orderItemIds);
+  // const [sta, setSta] = useState<number>(props.status);
+  console.log(props.status);
 
   const { mutate: updateOrderStatus } = useMutation<
     unknown,
@@ -120,7 +123,7 @@ const DetailItem = (props: OrderDetail) => {
     updateOrderStatus(5);
   };
   const handleCancel = () => {
-    // 주문상태를 5로 바꿈
+    // 주문상태를 0로 바꿈
     updateOrderStatus(-1);
   };
 
@@ -164,6 +167,7 @@ const DetailItem = (props: OrderDetail) => {
             )}
           </span>
         </div>
+        {/* <>{console.log(props)}</> */}
         <div className="flex flex-col ml-auto mr-4 text-right">
           <span style={{ fontWeight: "bold" }}>
             합계금액:{" "}
@@ -198,6 +202,7 @@ const Item = (props: OrderItemDetail) => {
   const [quantity, setQuantity] = useState<number | any>(props.quantity);
   const [amount, setAmount] = useState<number>(props.quantity);
   const router = useRouter();
+  // console.log(props);
 
   useEffect(() => {
     if (quantity != null) {
@@ -207,9 +212,9 @@ const Item = (props: OrderItemDetail) => {
 
   return (
     <div className="w-full flex p-4" style={{ borderBottom: "1px solid grey" }}>
-      {props.Image_url && (
+      {props.image_url && (
         <Image
-          src={props.Image_url}
+          src={props.image_url}
           width={155}
           height={195}
           alt={props.name}

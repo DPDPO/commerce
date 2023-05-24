@@ -26,27 +26,26 @@ model products {
 }
 
 model user {
-  id String @id @default(cuid())
-  name String?
+  id    String  @id @default(cuid())
+  name  String?
   email String? @unique
   image String?
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -77,35 +76,35 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
- model Wishlist {
-    id          Int      @id @default(autoincrement())
-    userId String @unique
-    productIds String
- }
+model Wishlist {
+  id         Int    @id @default(autoincrement())
+  userId     String @unique
+  productIds String
+}
 
- model Cart {
-      id          Int      @id @default(autoincrement())
-      userId String
-      productId Int
-      quantity Int
-      amount Int
- }
+model Cart {
+  id        Int    @id @default(autoincrement())
+  userId    String
+  productId Int
+  quantity  Int
+  amount    Int
+}
 
- model OrderItem {
-      id          Int      @id @default(autoincrement())
-      productId Int
-      quantity Int
-      price Int
-      amount Int
- }
+model OrderItem {
+  id        Int @id @default(autoincrement())
+  productId Int
+  quantity  Int
+  price     Int
+  amount    Int
+}
 
- model Orders {
-        id          Int      @id @default(autoincrement())
-        userId String
-        orderItemIds String
-        receiver String?
-        address  String?
-        phoneNumber String?
-        createdAt DateTime @default(now())
-        status Int
- }
+model Orders {
+  id           Int      @id @default(autoincrement())
+  userId       String
+  orderItemIds String
+  receiver     String?
+  address      String?
+  phoneNumber  String?
+  createdAt    DateTime @default(now())
+  status       Int
+}
