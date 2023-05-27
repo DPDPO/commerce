@@ -1,3 +1,4 @@
+import { Button } from "@mantine/core";
 import {
   IconHeart,
   IconHome2,
@@ -16,7 +17,7 @@ export default function Header() {
       {router.pathname === "/" ? undefined : (
         <div className="mt-12 mb-12">
           <div className="w-full flex h-50 items-center">
-            <IconHome2 onClick={() => router.push("/shop")} />
+            <IconHome2 size={36} onClick={() => router.push("/shop")} />
             <span className="m-auto" />
             {session ? (
               <>
@@ -28,23 +29,28 @@ export default function Header() {
                 style={{ borderRadius: "50%" }}
             /> */}
                 <IconHeart
+                  size={36}
                   className="mr-4"
                   onClick={() => router.push("/wishlist")}
                 />
                 <IconShoppingCart
+                  size={36}
                   className="mr-4"
                   onClick={() => router.push("/cart")}
                 />
                 <IconUserCircle
                   // className="mr-12"
+                  size={36}
                   onClick={() => router.push("/my")}
                 />
               </>
             ) : (
-              <IconUser
-                // className="mr-12"
+              <Button
+                style={{ background: "black", color: "white" }}
                 onClick={() => router.push("/auth/login")}
-              />
+              >
+                로그인
+              </Button>
             )}
           </div>
         </div>

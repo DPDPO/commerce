@@ -133,14 +133,14 @@ const DetailItem = (props: OrderDetail) => {
       style={{ border: "1px solid grey" }}
     >
       <div className="flex">
-        {/* {props.status === undefined ? (
+        {props.status === undefined ? (
           <Badge size="lg" color="red">
             주문대기
           </Badge>
         ) : (
           <Badge size="lg">{ORDER_STATUS_MAP[props.status + 1]}</Badge>
-        )} */}
-        <Badge size="lg">{ORDER_STATUS_MAP[props.status + 1]}</Badge>
+        )}
+        {/* <Badge size="lg">{ORDER_STATUS_MAP[props.status + 1]}</Badge> */}
         <IconX onClick={handleCancel} className="ml-auto" />
       </div>
 

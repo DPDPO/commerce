@@ -84,6 +84,22 @@ export default function Home() {
           >
             쇼핑{" "}
           </Button>
+        </motion.div>
+        <motion.div
+          ref={divRef}
+          className="box"
+          initial={{ opacity: 0.2 }}
+          whileInView={{
+            opacity: 1,
+            rotate: [0, 360],
+            borderRadius: ["20%", "50%"],
+            transition: { delay: 0.1 },
+          }}
+          whileHover={{
+            scale: 1.2,
+            transition: { type: "spring", stiffness: 400, damping: 30 },
+          }}
+        >
           <Button
             style={{ background: "black", color: "white" }}
             onClick={() => router.push("/auth/login")}
