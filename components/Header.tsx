@@ -1,12 +1,14 @@
-import { Button } from "@mantine/core";
+import styled from "@emotion/styled";
 import {
   IconHeart,
   IconHome2,
+  IconList,
+  IconLogin,
+  IconLogout,
   IconShoppingCart,
-  IconUser,
   IconUserCircle,
 } from "@tabler/icons-react";
-import { useSession } from "next-auth/react";
+import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 
 export default function Header() {
@@ -15,42 +17,81 @@ export default function Header() {
   return (
     <>
       {router.pathname === "/" ? undefined : (
-        <div className="mt-12 mb-12">
-          <div className="w-full flex h-50 items-center">
-            <IconHome2 size={36} onClick={() => router.push("/shop")} />
+        <div className="mt-12 mb-10">
+          <div className="w-full flex items-center" style={{ height: "80px" }}>
+            <List>
+              <IconList
+                style={{ cursor: "pointer" }}
+                size={40}
+                onClick={() => router.push("/shop")}
+              />
+              <span className="list">상품 목록</span>
+            </List>
+
             <span className="m-auto" />
             {session ? (
               <>
-                {/* <image
-                // alt="user"
-                // src={session.user?.image}
-                width={30}
-                height={30}
-                style={{ borderRadius: "50%" }}
-            /> */}
-                <IconHeart
-                  size={36}
-                  className="mr-4"
-                  onClick={() => router.push("/wishlist")}
-                />
-                <IconShoppingCart
-                  size={36}
-                  className="mr-4"
-                  onClick={() => router.push("/cart")}
-                />
-                <IconUserCircle
-                  // className="mr-12"
-                  size={36}
-                  onClick={() => router.push("/my")}
-                />
+                <Heart>
+                  <IconHeart
+                    size={36}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => router.push("/wishlist")}
+                  />
+                  <span className="heart">찜 목록</span>
+                </Heart>
+                <Cart>
+                  <IconShoppingCart
+                    size={36}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => router.push("/cart")}
+                  />
+                  <span className="cart">장바구니</span>
+                </Cart>
+                <My>
+                  <IconUserCircle
+                    size={36}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => router.push("/my")}
+                  />
+                  <span className="my">마이 페이지</span>
+                </My>
+                {/* <Button
+                  style={{
+                    marginLeft: "16px",
+                    background: "black",
+                    color: "white",
+                  }}
+                  onClick={() => {
+                    // e.preventDefault();
+                    signOut();
+                  }}
+                >
+                  로그아웃
+                </Button> */}
+                <Logout>
+                  <IconLogout // className="mr-12"
+                    size={36}
+                    style={{ cursor: "pointer" }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      signOut();
+                    }}
+                  />
+                  <span className="logout">로그아웃</span>
+                </Logout>
               </>
             ) : (
-              <Button
-                style={{ background: "black", color: "white" }}
-                onClick={() => router.push("/auth/login")}
-              >
-                로그인
-              </Button>
+              <Login>
+                <IconLogin
+                  size={36}
+                  style={{ cursor: "pointer" }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    signIn();
+                  }}
+                />
+                <span className="login">로그인</span>
+              </Login>
             )}
           </div>
         </div>
@@ -58,3 +99,96 @@ export default function Header() {
     </>
   );
 }
+
+const Logout = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+  width: 58px;
+  &:hover > .logout {
+    color: black;
+  }
+  .logout {
+    color: white;
+    font-size: 12px;
+  }
+`;
+const My = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+  width: 58px;
+  &:hover > .my {
+    color: black;
+  }
+  .my {
+    color: white;
+    font-size: 12px;
+  }
+`;
+
+const Cart = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+  width: 58px;
+  &:hover > .cart {
+    color: black;
+  }
+  .cart {
+    color: white;
+    font-size: 12px;
+  }
+`;
+
+const Heart = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+  width: 58px;
+  &:hover > .heart {
+    color: black;
+  }
+  .heart {
+    color: white;
+    font-size: 12px;
+  }
+`;
+const Login = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+  width: 58px;
+  &:hover > .login {
+    color: black;
+  }
+  .login {
+    color: white;
+    font-size: 12px;
+  }
+`;
+const List = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+  width: 58px;
+  &:hover > .list {
+    color: black;
+  }
+  .list {
+    color: white;
+    font-size: 12px;
+  }
+`;
