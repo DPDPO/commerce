@@ -112,15 +112,9 @@ export default function Shop() {
           onChange={handleChange}
         />
       </div>
-      <div className="mb-4">
-        <Select
-          value={selectedFilter}
-          onChange={setSelectedFilter}
-          data={FILTERS}
-        />
-      </div>
+      <div className="mb-4"></div>
       {categories && (
-        <div className="mb-4">
+        <div className="mb-4" style={{ display: "flex" }}>
           <SegmentedControl
             value={selectCategory}
             onChange={setSelectCategory}
@@ -133,6 +127,12 @@ export default function Shop() {
               })),
             ]}
             color="dark"
+          />
+          <Select
+            style={{ marginLeft: "auto" }}
+            value={selectedFilter}
+            onChange={setSelectedFilter}
+            data={FILTERS}
           />
         </div>
       )}

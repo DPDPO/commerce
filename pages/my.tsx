@@ -182,7 +182,7 @@ const DetailItem = (props: OrderDetail) => {
           <span className="text-zinc-400 mt-auto mb-auto">
             주문일자:{" "}
             {props.createdAt === undefined
-              ? "23년 05월 29일 15:39"
+              ? "오늘"
               : format(new Date(props.createdAt), "yy년 MM월 DD일 HH:mm")}
             {/* {format(new Date(props.createdAt), "yy년 MM월 DD일 HH:mm")} */}
           </span>
