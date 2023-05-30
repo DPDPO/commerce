@@ -9,6 +9,7 @@ import useDebounce from "hooks/useDebounce";
 import { useQuery } from "@tanstack/react-query"; //캐싱관리
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import styled from "@emotion/styled";
 
 export default function Shop() {
   const router = useRouter();
@@ -114,7 +115,7 @@ export default function Shop() {
       </div>
       <div className="mb-4"></div>
       {categories && (
-        <div className="mb-4" style={{ display: "flex" }}>
+        <Container>
           <SegmentedControl
             value={selectCategory}
             onChange={setSelectCategory}
@@ -129,12 +130,12 @@ export default function Shop() {
             color="dark"
           />
           <Select
-            style={{ marginLeft: "auto" }}
+            className="sele"
             value={selectedFilter}
             onChange={setSelectedFilter}
             data={FILTERS}
           />
-        </div>
+        </Container>
       )}
       {products && (
         <div className="grid grid-cols-3 gap-5">
@@ -178,6 +179,21 @@ export default function Shop() {
     </div>
   );
 }
+const Container = styled.div`
+  display: flex;
+  margin-bottom: 12px;
+  @media screen and (max-width: 780px) {
+    display: flex;
+    flex-direction: column;
+  }
+  .sele {
+    margin-left: auto;
+    @media screen and (max-width: 780px) {
+      margin-left: 0;
+      margin-top: 12px;
+    }
+  }
+`;
 
 // /** @jsxImportSource @emotion/react */
 

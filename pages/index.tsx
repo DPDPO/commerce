@@ -41,9 +41,9 @@ export default function Home() {
         </>
       ) : (
         <div>
-          <span style={{ fontSize: "120px" }}>Hello</span>
+          <span style={{ fontSize: "80px" }}>Hello</span>
           <Lay>
-            <span style={{ fontSize: "120px" }}>PSC COMMERCE</span>
+            <span style={{ fontSize: "80px" }}>PSC COMMERCE</span>
             <motion.div
               className="box"
               initial={{ opacity: 0, scale: 0.5 }}
@@ -57,8 +57,8 @@ export default function Home() {
               <img
                 src={"https://cdn-icons-png.flaticon.com/512/263/263142.png"}
                 alt="img"
-                width={400}
-                height={300}
+                width={300}
+                height={200}
                 // layout="responsive"
               />
             </motion.div>
