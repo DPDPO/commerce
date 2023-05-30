@@ -70,7 +70,7 @@ export default function MyPage() {
 const DetailItem = (props: OrderDetail) => {
   const queryClient = useQueryClient();
   // const [sta, setSta] = useState<number>(props.status);
-  console.log(props.status);
+  console.log(props.id);
 
   const { mutate: updateOrderStatus } = useMutation<
     unknown,
@@ -117,14 +117,46 @@ const DetailItem = (props: OrderDetail) => {
       },
     }
   );
+  // const { mutate: deleteCart } = useMutation<unknown, unknown, number, any>(
+  //   (id) =>
+  //     fetch(`/api/delete-cart`, {
+  //       method: "DELETE",
+  //       body: JSON.stringify({ id }),
+  //     })
+  //       .then((res) => res.json())
+  //       .then((data) => data.items),
+  //   {
+  //     onMutate: async (id) => {
+  //       await queryClient.cancelQueries({ queryKey: [ORDER_QUERY_KEY] });
+
+  //       // Snapshot the previous value
+  //       const previous = queryClient.getQueryData([ORDER_QUERY_KEY]);
+
+  //       // Optimistically update to the new value
+  //       queryClient.setQueryData<Cart[]>([ORDER_QUERY_KEY], (old) =>
+  //         old?.filter((c) => c.id !== id)
+  //       );
+
+  //       // Return a context object with the snapshotted value
+  //       return { previous };
+  //     },
+  //     // onError: (error, _, context) => {
+  //     //   queryClient.setQueriesData([WISHLIST_QUERY], context.previous);
+  //     // },
+  //     onSuccess: () => {
+  //       queryClient.invalidateQueries([ORDER_QUERY_KEY]);
+  //     },
+  //   }
+  // );
   const handlePayment = () => {
     // 주문상태를 5로 바꿈
-
-    updateOrderStatus(5);
+    alert("준비중인 기능입니다.");
+    // updateOrderStatus(5);
   };
   const handleCancel = () => {
     // 주문상태를 0로 바꿈
-    updateOrderStatus(-1);
+    // updateOrderStatus(-1);
+    // deleteCart(props.id);
   };
 
   return (

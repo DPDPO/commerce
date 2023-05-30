@@ -14,6 +14,7 @@ import { useRouter } from "next/router";
 export default function Header() {
   const { data: session } = useSession();
   const router = useRouter();
+
   return (
     <>
       {router.pathname === "/" ? undefined : (

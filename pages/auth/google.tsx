@@ -1,6 +1,8 @@
-import { GoogleLogin } from "@react-oauth/google";
+import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { CLIENT_ID } from "constants/googleOauth";
+import { useRouter } from "next/router";
+
 export default function Google() {
   return (
     <GoogleOAuthProvider clientId={CLIENT_ID}>

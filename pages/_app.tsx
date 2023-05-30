@@ -4,6 +4,8 @@ import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import { SessionProvider } from "next-auth/react";
 import Header from "@/components/Header";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { CLIENT_ID } from "constants/googleOauth";
 
 export default function App({
   Component,
@@ -15,13 +17,15 @@ export default function App({
     },
   });
   return (
-    <SessionProvider session={session}>
-      <QueryClientProvider client={queryClient}>
-        <div className="px-24">
-          <Header />
-          <Component {...pageProps} />
-        </div>
-      </QueryClientProvider>
-    </SessionProvider>
+    <GoogleOAuthProvider clientId={CLIENT_ID}>
+      <SessionProvider session={session}>
+        <QueryClientProvider client={queryClient}>
+          <div className="px-24">
+            <Header />
+            <Component {...pageProps} />
+          </div>
+        </QueryClientProvider>
+      </SessionProvider>
+    </GoogleOAuthProvider>
   );
 }
