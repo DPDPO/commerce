@@ -128,7 +128,7 @@ const My = styled.div`
   }
   .my {
     color: white;
-    font-size: 12px;
+    font-size: 8px;
   }
 `;
 
