@@ -14,11 +14,12 @@
 
 ## 📌 기술 스택
 
- <img src="https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=Next.js&logoColor=white"/>
- <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white"/>
- <img src="https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=Vercel&logoColor=white"/>
- <img src="https://img.shields.io/badge/prisma-000000?style=flat-square&logo=prisma&logoColor=white"/>
- <img src="https://img.shields.io/badge/planetscale-000000?style=flat-square&logo=planetscale&logoColor=white"/>
+<img src="https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=Next.js&logoColor=white"/>
+<img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white"/>
+<img src="https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=Vercel&logoColor=white"/>
+<img src="https://img.shields.io/badge/prisma-000000?style=flat-square&logo=prisma&logoColor=white"/>
+<img src="https://img.shields.io/badge/planetscale-000000?style=flat-square&logo=planetscale&logoColor=white"/>
+<img src="https://img.shields.io/badge/reactquery-FF4154?style=flat-square&logo=reactquery&logoColor=white"/>
 
 ## 📌 구현 기능
 
