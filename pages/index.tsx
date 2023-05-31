@@ -41,16 +41,36 @@ export default function Home() {
         </>
       ) : (
         <div>
-          <span style={{ fontSize: "80px" }}>Hello</span>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, y: 35 }}
+            transition={{
+              duration: 0.8,
+              delay: 0.3,
+              ease: [0, 0.21, 0.2, 1.01],
+            }}
+          >
+            <span style={{ fontSize: "80px" }}>Hello</span>
+          </motion.div>
           <Lay>
-            <span style={{ fontSize: "80px" }}>PSC COMMERCE</span>
             <motion.div
-              className="box"
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1, y: 35 }}
               transition={{
                 duration: 0.8,
-                delay: 0.3,
+                delay: 0.6,
+                ease: [0, 0.21, 0.2, 1.01],
+              }}
+            >
+              <span style={{ fontSize: "80px" }}>PSC COMMERCE</span>
+            </motion.div>
+            <motion.div
+              className="box"
+              initial={{ opacity: 0, x: -100 }}
+              animate={{ x: 30, opacity: 1 }}
+              transition={{
+                duration: 0.8,
+                delay: 1,
                 ease: [0, 0.21, 0.2, 1.01],
               }}
             >
@@ -59,6 +79,8 @@ export default function Home() {
                 alt="img"
                 width={300}
                 height={200}
+                style={{ marginTop: "20px" }}
+                // className="im"
                 // layout="responsive"
               />
             </motion.div>
@@ -74,13 +96,13 @@ export default function Home() {
             <motion.div
               ref={divRef}
               className="box"
-              // initial={{ opacity: 0.2 }}
-              // whileInView={{
-              //   opacity: 1,
-              //   rotate: [0, 360],
-              //   borderRadius: ["20%", "50%"],
-              //   transition: { delay: 0.1 },
-              // }}
+              initial={{ opacity: 0 }}
+              whileInView={{
+                opacity: 1,
+                // rotate: [0, 360],
+                borderRadius: ["20%", "50%"],
+                transition: { delay: 1.8 },
+              }}
               whileHover={{
                 scale: 1.2,
                 transition: { type: "spring", stiffness: 400, damping: 30 },
@@ -101,13 +123,13 @@ export default function Home() {
             <motion.div
               ref={divRef}
               className="box"
-              // initial={{ opacity: 0.2 }}
-              // whileInView={{
-              //   opacity: 1,
-              //   rotate: [0, 360],
-              //   borderRadius: ["20%", "50%"],
-              //   transition: { delay: 0.1 },
-              // }}
+              initial={{ opacity: 0 }}
+              whileInView={{
+                opacity: 1,
+                // rotate: [0, 360],
+                borderRadius: ["20%", "50%"],
+                transition: { delay: 1.8 },
+              }}
               whileHover={{
                 scale: 1.2,
                 transition: { type: "spring", stiffness: 400, damping: 30 },
@@ -217,4 +239,7 @@ export default function Home() {
 const Lay = styled.div`
   display: flex;
   flex-direction: column;
+  .im {
+    transform: scaleX(-1);
+  }
 `;
