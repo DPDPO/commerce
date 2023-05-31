@@ -80,8 +80,6 @@ export default function Home() {
                 width={300}
                 height={200}
                 style={{ marginTop: "20px" }}
-                // className="im"
-                // layout="responsive"
               />
             </motion.div>
           </Lay>
