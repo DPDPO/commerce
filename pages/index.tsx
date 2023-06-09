@@ -1,37 +1,21 @@
-import { categories, products } from "@prisma/client";
-import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { Button } from "@mantine/core";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
 import { useSession, signIn } from "next-auth/react";
-import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
-import { CLIENT_ID } from "constants/googleOauth";
 
 export default function Home() {
   const router = useRouter();
-  // https://www.webtro.co.kr/images/sub/marketing4_top1.png
   const divRef = useRef<HTMLDivElement>(null);
-  // const google = useGoogleLogin({
-  //   onSuccess: (props:any) => {
-  //     fetch(
-  //                 `/api/auth/sign-up?credential=${credentialResponse.credential}`
-  //               )
-  //   },
-  //   redirect_uri: "/cart",
+
   const routeHandler = () => {
     setTimeout(() => {
       router.push("/shop");
     });
   };
-  // });
   const { data: session } = useSession();
-  // useEffect(() => {
-  //   if (session !== null && undefined) {
-  //     routeHandler();
-  //   }
-  // }, [session]);
+
   return (
     <>
       {session ? (

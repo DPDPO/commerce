@@ -1,14 +1,12 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { Count } from "@/components/Count";
-import styled from "@emotion/styled";
 import { Badge, Button } from "@mantine/core";
 import { Cart, OrderItem, Orders } from "@prisma/client";
-import { IconRefresh, IconX } from "@tabler/icons-react";
+import { IconX } from "@tabler/icons-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface OrderItemDetail extends OrderItem {
   name: string;
@@ -44,9 +42,9 @@ export default function MyPage() {
 
   return (
     <div>
-      <span className="text-2xl mb-3">
+      <div className="text-2xl ml-4 mb-3">
         주문내역 ({data ? data.length : 0}){" "}
-      </span>
+      </div>
       <div className="flex">
         <div className="flex flex-col p-4 space-y-4 flex-1">
           {data ? (
@@ -117,47 +115,11 @@ const DetailItem = (props: OrderDetail) => {
       },
     }
   );
-  // const { mutate: deleteCart } = useMutation<unknown, unknown, number, any>(
-  //   (id) =>
-  //     fetch(`/api/delete-cart`, {
-  //       method: "DELETE",
-  //       body: JSON.stringify({ id }),
-  //     })
-  //       .then((res) => res.json())
-  //       .then((data) => data.items),
-  //   {
-  //     onMutate: async (id) => {
-  //       await queryClient.cancelQueries({ queryKey: [ORDER_QUERY_KEY] });
 
-  //       // Snapshot the previous value
-  //       const previous = queryClient.getQueryData([ORDER_QUERY_KEY]);
-
-  //       // Optimistically update to the new value
-  //       queryClient.setQueryData<Cart[]>([ORDER_QUERY_KEY], (old) =>
-  //         old?.filter((c) => c.id !== id)
-  //       );
-
-  //       // Return a context object with the snapshotted value
-  //       return { previous };
-  //     },
-  //     // onError: (error, _, context) => {
-  //     //   queryClient.setQueriesData([WISHLIST_QUERY], context.previous);
-  //     // },
-  //     onSuccess: () => {
-  //       queryClient.invalidateQueries([ORDER_QUERY_KEY]);
-  //     },
-  //   }
-  // );
   const handlePayment = () => {
-    // 주문상태를 5로 바꿈
     alert("준비중인 기능입니다.");
-    // updateOrderStatus(5);
   };
-  const handleCancel = () => {
-    // 주문상태를 0로 바꿈
-    // updateOrderStatus(-1);
-    // deleteCart(props.id);
-  };
+  const handleCancel = () => {};
 
   return (
     <div

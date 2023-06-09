@@ -5,8 +5,6 @@ const notion = new Client({
   auth: "secret_OXOfmvmCKEkbuAV3p7TeOkZCwsvEShjVGKgWMS5rHjY",
 });
 
-const databaseId = "39cf5467688b4dc48d81e38e0153d54a";
-
 async function getDetail(pageId: string, propertyId: string) {
   try {
     const response = await notion.pages.properties.retrieve({

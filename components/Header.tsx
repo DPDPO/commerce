@@ -1,7 +1,6 @@
 import styled from "@emotion/styled";
 import {
   IconHeart,
-  IconHome2,
   IconList,
   IconLogin,
   IconLogout,
@@ -17,7 +16,7 @@ export default function Header() {
 
   return (
     <>
-      {router.pathname === "/" ? undefined : (
+      {router.pathname === "/" || router.pathname === "/404" ? undefined : (
         <div className="mt-12 mb-10">
           <div className="w-full flex items-center" style={{ height: "80px" }}>
             <List>
@@ -56,21 +55,8 @@ export default function Header() {
                   />
                   <span className="my">마이 페이지</span>
                 </My>
-                {/* <Button
-                  style={{
-                    marginLeft: "16px",
-                    background: "black",
-                    color: "white",
-                  }}
-                  onClick={() => {
-                    // e.preventDefault();
-                    signOut();
-                  }}
-                >
-                  로그아웃
-                </Button> */}
                 <Logout>
-                  <IconLogout // className="mr-12"
+                  <IconLogout
                     size={36}
                     style={{ cursor: "pointer" }}
                     onClick={(e) => {
