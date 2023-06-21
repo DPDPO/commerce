@@ -20,8 +20,7 @@ export default function Wishlist() {
   return (
     <div>
       <p className="text-2xl mb-4">내가 찜한 상품</p>
-      {products ? undefined : <span>찜한 목록이 없습니다.</span>}
-      {products && (
+      {products ? (
         <div className="grid grid-cols-3 gap-5">
           {products.map((item: any) => (
             <div
@@ -49,6 +48,8 @@ export default function Wishlist() {
             </div>
           ))}
         </div>
+      ) : (
+        "Loading..."
       )}
     </div>
   );

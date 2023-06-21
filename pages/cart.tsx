@@ -21,12 +21,16 @@ interface CartItem extends Cart {
 export const CART_QUERY_KEY = `/api/get-cart`;
 
 export default function CartPage() {
+  // const { data } = useQuery<{ items: CartItem[] }, unknown, CartItem[]>(
+  //   [CART_QUERY_KEY],
+  //   () =>
+  //     fetch(CART_QUERY_KEY)
+  //       .then((res) => res.json())
+  //       .then((data) => data.items)
+  // );
   const { data } = useQuery<{ items: CartItem[] }, unknown, CartItem[]>(
     [CART_QUERY_KEY],
-    () =>
-      fetch(CART_QUERY_KEY)
-        .then((res) => res.json())
-        .then((data) => data.items)
+    () => axios(CART_QUERY_KEY).then((response) => response.data.items)
   );
 
   const router = useRouter();
@@ -47,12 +51,15 @@ export default function CartPage() {
     any
   >(
     (items) =>
-      fetch(`/api/add-order`, {
-        method: "POST",
-        body: JSON.stringify({ items }),
-      })
-        .then((res) => res.json())
-        .then((data) => data.items),
+      // fetch(`/api/add-order`, {
+      //   method: "POST",
+      //   body: JSON.stringify({ items }),
+      // })
+      //   .then((res) => res.json())
+      //   .then((data) => data.items),
+      axios
+        .post("/api/add-order", { items })
+        .then((response) => response.data.items),
     {
       onMutate: () => {
         queryClient.invalidateQueries([ORDER_QUERY_KEY]);
@@ -82,12 +89,8 @@ export default function CartPage() {
     { items: products[] },
     unknown,
     products[]
-  >(
-    [`/api/get-products?skip=0&take=3`],
-    () => fetch(`/api/get-products?skip=0&take=3`).then((res) => res.json()),
-    {
-      select: (data) => data.items,
-    }
+  >([`/api/get-products?skip=0&take=3`], () =>
+    axios(`/api/get-products?skip=0&take=3`).then((res) => res.data.items)
   );
   return (
     <div>
@@ -191,11 +194,14 @@ const Item = (props: CartItem) => {
   };
 
   const handleUpdate = () => {
-    updateCart({
-      ...props,
-      quantity: quantity,
-      amount: props.price * quantity,
-    });
+    const newQuantity = parseInt(quantity);
+    if (!isNaN(newQuantity)) {
+      updateCart({
+        ...props,
+        quantity: newQuantity,
+        amount: props.price * newQuantity,
+      });
+    }
   };
 
   useEffect(() => {
@@ -206,12 +212,9 @@ const Item = (props: CartItem) => {
 
   const { mutate: updateCart } = useMutation<unknown, unknown, Cart, any>(
     (item) =>
-      fetch(`/api/update-cart`, {
-        method: "POST",
-        body: JSON.stringify({ item }),
-      })
-        .then((res) => res.json())
-        .then((data) => data.items),
+      axios
+        .post(`/api/update-cart`, { item })
+        .then((response) => response.data.items),
     {
       onMutate: async (item) => {
         await queryClient.cancelQueries({ queryKey: [CART_QUERY_KEY] });
@@ -238,12 +241,10 @@ const Item = (props: CartItem) => {
 
   const { mutate: deleteCart } = useMutation<unknown, unknown, number, any>(
     (id) =>
-      fetch(`/api/delete-cart`, {
-        method: "POST",
-        body: JSON.stringify({ id }),
-      })
-        .then((res) => res.json())
-        .then((data) => data.items),
+      axios
+        .post(`/api/delete-cart`, { id })
+        .then((response) => response.data.items),
+
     {
       onMutate: async (id) => {
         await queryClient.cancelQueries({ queryKey: [CART_QUERY_KEY] });

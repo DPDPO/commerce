@@ -187,7 +187,6 @@ export default function Products(props: {
       alert("최소 수량을 입력하세요.");
       return;
     }
-    // alert("장바구니로 이동");
 
     if (type === "cart") {
       addCart({

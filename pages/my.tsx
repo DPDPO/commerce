@@ -7,6 +7,8 @@ import { format } from "date-fns";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { CART_QUERY_KEY } from "./cart";
+import axios from "axios";
 
 interface OrderItemDetail extends OrderItem {
   name: string;
@@ -34,10 +36,7 @@ export const ORDER_QUERY_KEY = `/api/get-order`;
 export default function MyPage() {
   const { data } = useQuery<{ items: OrderDetail[] }, unknown, OrderDetail[]>(
     [ORDER_QUERY_KEY],
-    () =>
-      fetch(ORDER_QUERY_KEY)
-        .then((res) => res.json())
-        .then((data) => data.items)
+    () => axios(ORDER_QUERY_KEY).then((res) => res.data.items)
   );
 
   return (
@@ -51,7 +50,7 @@ export default function MyPage() {
             data?.length > 0 ? (
               data.map((item, idx) => (
                 <>
-                  <DetailItem {...item} key={idx} />
+                  <DetailItem item={item} key={idx} />
                 </>
               ))
             ) : (
@@ -65,10 +64,10 @@ export default function MyPage() {
     </div>
   );
 }
-const DetailItem = (props: OrderDetail) => {
+const DetailItem = ({ item }: { item: OrderDetail }) => {
   const queryClient = useQueryClient();
   // const [sta, setSta] = useState<number>(props.status);
-  console.log(props.id);
+  console.log(item.status);
 
   const { mutate: updateOrderStatus } = useMutation<
     unknown,
@@ -80,9 +79,9 @@ const DetailItem = (props: OrderDetail) => {
       fetch(`/api/update-order-status`, {
         method: "POST",
         body: JSON.stringify({
-          id: props.id,
-          status: status,
-          userId: props.userId,
+          id: item.id,
+          status: item.status,
+          userId: item.userId,
         }),
       })
         .then((res) => res.json())
@@ -97,7 +96,7 @@ const DetailItem = (props: OrderDetail) => {
         // Optimistically update to the new value
         queryClient.setQueryData<Cart[]>([ORDER_QUERY_KEY], (old) =>
           old?.map((c) => {
-            if (c.id !== props.id) {
+            if (c.id !== item.id) {
               return { ...c, status: status };
             }
             return c;
@@ -119,26 +118,42 @@ const DetailItem = (props: OrderDetail) => {
   const handlePayment = () => {
     alert("준비중인 기능입니다.");
   };
-  const handleCancel = () => {};
 
+  const { mutate: deleteOrderItem } = useMutation(
+    () => fetch(`/api/delete-my/${item.id}`, { method: "DELETE" }),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries([ORDER_QUERY_KEY]);
+      },
+    }
+  );
+
+  const handleCancel = async () => {
+    const confirmed = window.confirm("정말로 삭제하시겠습니까?");
+    if (confirmed) {
+      try {
+        await deleteOrderItem();
+      } catch (error) {
+        console.error("Error deleting item:", error);
+      }
+    }
+  };
   return (
     <div
       className="w-full flex flex-col p-4 rounded-md"
       style={{ border: "1px solid grey" }}
     >
       <div className="flex">
-        {props.status === undefined ? (
-          <Badge size="lg" color="red">
-            주문대기
-          </Badge>
+        {item.status === undefined ? (
+          <Badge size="lg">주문 대기</Badge>
         ) : (
-          <Badge size="lg">{ORDER_STATUS_MAP[props.status + 1]}</Badge>
+          <Badge size="lg">{ORDER_STATUS_MAP[item.status + 1]}</Badge>
         )}
-        {/* <Badge size="lg">{ORDER_STATUS_MAP[props.status + 1]}</Badge> */}
+
         <IconX onClick={handleCancel} className="ml-auto" />
       </div>
 
-      {props.orderItems.map((orderItem, idx) => (
+      {item.orderItems.map((orderItem, idx) => (
         <Item key={idx} {...orderItem} />
       ))}
       <div className="flex mt-4">
@@ -148,17 +163,14 @@ const DetailItem = (props: OrderDetail) => {
           </span>
           <span>
             받는사람:{" "}
-            {props.receiver ?? <span style={{ color: "red" }}>입력필요</span>}
+            {item.receiver ?? <span style={{ color: "red" }}>입력필요</span>}
           </span>
           <span>
             주소:{" "}
-            {props.address ?? <span style={{ color: "red" }}>입력필요</span>}
+            {item.address ?? <span style={{ color: "red" }}>입력필요</span>}
           </span>
           <span>
-            연락처:{" "}
-            {props.phoneNumber ?? (
-              <span style={{ color: "red" }}>입력필요</span>
-            )}
+            연락처: <span style={{ color: "red" }}>입력필요</span>
           </span>
         </div>
         {/* <>{console.log(props)}</> */}
@@ -166,7 +178,7 @@ const DetailItem = (props: OrderDetail) => {
           <span style={{ fontWeight: "bold" }}>
             합계금액:{" "}
             <span style={{ color: "red" }}>
-              {props.orderItems
+              {item.orderItems
                 .map((item) => item.amount)
                 .reduce((prev, curr) => prev + curr, 0)
                 .toLocaleString("ko-kr")}{" "}
@@ -175,9 +187,9 @@ const DetailItem = (props: OrderDetail) => {
           </span>
           <span className="text-zinc-400 mt-auto mb-auto">
             주문일자:{" "}
-            {props.createdAt === undefined
-              ? "오늘"
-              : format(new Date(props.createdAt), "yy년 MM월 DD일 HH:mm")}
+            {item.createdAt
+              ? format(new Date(item.createdAt), "yy년 MM월 DD일 HH:mm")
+              : "오늘"}
             {/* {format(new Date(props.createdAt), "yy년 MM월 DD일 HH:mm")} */}
           </span>
           <Button

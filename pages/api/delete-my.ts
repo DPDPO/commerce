@@ -5,9 +5,9 @@ import { authOptions } from "./auth/[...nextauth]";
 
 const prisma = new PrismaClient();
 
-async function deleteCart(id: number) {
+async function deleteMy(id: number) {
   try {
-    const response = await prisma.cart.delete({
+    const response = await prisma.orders.delete({
       where: {
         id: id,
       },
@@ -29,18 +29,22 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   const session: any = await getServerSession(req, res, authOptions);
-  // const { id } = JSON.parse(req.body);
-  const { id } = req.body;
+  const { id } = req.query;
 
   if (session == null) {
     res.status(200).json({ items: [], message: `no Session ` });
     return;
   }
 
-  try {
-    const wishlist = await deleteCart(id);
-    res.status(200).json({ items: wishlist, message: `Success` });
-  } catch (error) {
-    res.status(400).json({ message: `Failed ` });
+  if (req.method === "DELETE") {
+    try {
+      const wishlist = await deleteMy(Number(id));
+      res.status(200).json({ items: wishlist, message: `Success` });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({ message: `Failed ` });
+    }
+  } else {
+    res.status(405).json({ message: "Method Not Allowed" });
   }
 }
