@@ -10,6 +10,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useState } from "react";
 import { ORDER_QUERY_KEY } from "./my";
+import axios from "axios";
 
 interface CartItem extends Cart {
   name: string;
@@ -27,9 +28,9 @@ export default function CartPage() {
         .then((res) => res.json())
         .then((data) => data.items)
   );
+
   const router = useRouter();
   const dilveryAcount = data && data.length > 0 ? 5000 : 0;
-  const discountDily = 0;
   const queryClient = useQueryClient();
 
   const amount = useMemo(() => {
