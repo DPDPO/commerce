@@ -76,16 +76,13 @@ const DetailItem = ({ item }: { item: OrderDetail }) => {
     any
   >(
     (status) =>
-      fetch(`/api/update-order-status`, {
-        method: "POST",
-        body: JSON.stringify({
+      axios
+        .post(`/api/update-order-status`, {
           id: item.id,
           status: item.status,
           userId: item.userId,
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => data.items),
+        })
+        .then((data) => data.data.items),
     {
       onMutate: async (status) => {
         await queryClient.cancelQueries({ queryKey: [ORDER_QUERY_KEY] });
@@ -120,7 +117,7 @@ const DetailItem = ({ item }: { item: OrderDetail }) => {
   };
 
   const { mutate: deleteOrderItem } = useMutation(
-    () => fetch(`/api/delete-my/${item.id}`, { method: "DELETE" }),
+    () => axios(`/api/delete-my/${item.id}`, { method: "DELETE" }),
     {
       onSuccess: () => {
         queryClient.invalidateQueries([ORDER_QUERY_KEY]);

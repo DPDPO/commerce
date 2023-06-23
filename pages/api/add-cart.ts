@@ -30,7 +30,8 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   const session: any = await getServerSession(req, res, authOptions);
-  const { item } = JSON.parse(req.body);
+  // const { item } = JSON.parse(req.body);
+  const { item } = req.body;
 
   if (session == null) {
     res.status(200).json({ items: [], message: `no Session` });

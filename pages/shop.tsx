@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query"; //캐싱관리
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import styled from "@emotion/styled";
+import axios from "axios";
 
 export default function Shop() {
   const router = useRouter();
@@ -40,12 +41,12 @@ export default function Shop() {
     { items: categories[] },
     unknown,
     categories[]
-  >(
-    [`/api/get-categories`],
-    () => fetch(`/api/get-categories`).then((res) => res.json()),
-    {
-      select: (data) => data.items,
-    }
+  >([`/api/get-categories`], () =>
+    // fetch(`/api/get-categories`).then((res) => res.json()),
+    // {
+    //   select: (data) => data.items,
+    // }
+    axios(`/api/get-categories`).then((res) => res.data.items)
   );
 
   // useEffect(() => {
@@ -62,12 +63,11 @@ export default function Shop() {
       `/api/get-products-count?category=${selectCategory}&contains=${debouncedKeyword}`,
     ],
     () =>
-      fetch(
+      axios(
         `/api/get-products-count?category=${selectCategory}&contains=${debouncedKeyword}`
-      )
-        .then((res) => res.json())
-        // select 안쓰고 then으로
-        .then((data) => Math.ceil(data.items / TAKE))
+      ).then((res) => Math.ceil(res.data.items / TAKE))
+    // select 안쓰고 then으로
+    // .then((data) => Math.ceil(data.items / TAKE))
     // {
     //   select: (data) => Math.ceil(data.items / TAKE),
     // }
@@ -92,14 +92,11 @@ export default function Shop() {
       }&take=${TAKE}&category=${selectCategory}&orderBy=${selectedFilter}&contains=${debouncedKeyword}`,
     ],
     () =>
-      fetch(
+      axios(
         `/api/get-products?skip=${
           TAKE * (activePage - 1)
         }&take=${TAKE}&category=${selectCategory}&orderBy=${selectedFilter}&contains=${debouncedKeyword}`
-      ).then((res) => res.json()),
-    {
-      select: (data) => data.items,
-    }
+      ).then((res) => res.data.items)
   );
 
   return (

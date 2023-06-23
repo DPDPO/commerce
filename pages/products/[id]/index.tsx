@@ -19,14 +19,13 @@ import { useSession } from "next-auth/react";
 import { Count } from "@/components/Count";
 import { CART_QUERY_KEY } from "pages/cart";
 import { ORDER_QUERY_KEY } from "pages/my";
+import axios from "axios";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const product = await fetch(
+  const product = await axios(
     // `http://localhost:3000/api/get-product?id=${context.params?.id}`
     `${process.env.NEXTAUTH_URL}/api/get-product?id=${context.params?.id}`
-  )
-    .then((res) => res.json())
-    .then((data) => data.items);
+  ).then((res) => res.data.items);
   return {
     props: {
       product: { ...product, images: [product.image_url, product.image_url] },
@@ -92,18 +91,15 @@ export default function Products(props: {
 
   const product = props.product;
   const { data: wishlist } = useQuery([WISHLIST_QUERY], () =>
-    fetch(WISHLIST_QUERY)
-      .then((res) => res.json())
-      .then((data) => data.items)
+    axios(WISHLIST_QUERY).then((res) => res.data.items)
   );
   const { mutate, isLoading } = useMutation<unknown, unknown, string, any>(
     (productId) =>
-      fetch(`/api/update-wishlist`, {
-        method: "POST",
-        body: JSON.stringify({ productId }),
-      })
-        .then((res) => res.json())
-        .then((data) => data.items),
+      axios
+        .post(`/api/update-wishlist`, {
+          productId,
+        })
+        .then((res) => res.data.items),
     {
       onMutate: async (productId) => {
         await queryClient.cancelQueries({ queryKey: [WISHLIST_QUERY] });
@@ -139,12 +135,11 @@ export default function Products(props: {
     any
   >(
     (item) =>
-      fetch(`/api/add-cart`, {
-        method: "POST",
-        body: JSON.stringify({ item }),
-      })
-        .then((res) => res.json())
-        .then((data) => data.items),
+      axios
+        .post(`/api/add-cart`, {
+          item,
+        })
+        .then((res) => res.data.items),
     {
       onMutate: () => {
         queryClient.invalidateQueries([CART_QUERY_KEY]);
@@ -162,12 +157,11 @@ export default function Products(props: {
     any
   >(
     (items) =>
-      fetch(`/api/add-order`, {
-        method: "POST",
-        body: JSON.stringify({ items }),
-      })
-        .then((res) => res.json())
-        .then((data) => data.items),
+      axios
+        .post(`/api/add-order`, {
+          items,
+        })
+        .then((res) => res.data.items),
     {
       onMutate: () => {
         queryClient.invalidateQueries([ORDER_QUERY_KEY]);

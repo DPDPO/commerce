@@ -15,13 +15,20 @@ async function updateWishlist(userId: string, productId: string) {
 
     const originWishlist =
       wishlist?.productIds != null && wishlist.productIds !== ""
-        ? wishlist.productIds.split(".")
+        ? wishlist.productIds.split(",")
         : [];
 
     const isWished = originWishlist.includes(productId);
-    const newWishlist = isWished
-      ? originWishlist.filter((id) => id !== productId)
-      : [...originWishlist, productId];
+    let newWishlist = [];
+
+    if (isWished) {
+      newWishlist = originWishlist.filter((id) => id !== productId);
+    } else {
+      newWishlist = [...originWishlist, productId];
+    }
+
+    // 중복 제거를 위해 Set을 사용하여 유니크한 값으로 변환 후 다시 배열로 변환.
+    newWishlist = Array.from(new Set(newWishlist));
 
     const response = await prisma.wishlist.upsert({
       where: {
@@ -35,13 +42,13 @@ async function updateWishlist(userId: string, productId: string) {
         productIds: newWishlist.join(","),
       },
     });
+
     console.log(response);
     return response?.productIds.split(",");
   } catch (error) {
     console.error(error);
   }
 }
-
 type Data = {
   items?: any;
   message: string;
@@ -52,7 +59,8 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   const session: any = await getServerSession(req, res, authOptions);
-  const { productId } = JSON.parse(req.body);
+  // const { productId } = JSON.parse(req.body);
+  const { productId } = req.body;
 
   if (session == null) {
     res.status(200).json({ items: [], message: `no Session` });
